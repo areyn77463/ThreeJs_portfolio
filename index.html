@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    <title>Aaron Reynolds</title>
+</head>
+<body>
+    <script type="module">
+        /** imports **/
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+        import {LoadingManager} from 'https://unpkg.com/three/src/loaders/LoadingManager.js';
+        import {TextureLoader} from 'https://unpkg.com/three/src/loaders/TextureLoader.js';
+        
+        /** Scene setup **/
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(25, window.innerWidth/window.innerHeight, 0.1, 1000);
+
+        const renderer = new THREE.WebGL1Renderer({
+        canvas: document.querySelector('#bg'),
+        })
+
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.setZ(30);
+        camera.position.setX(0);
+
+        const background = new THREE.TextureLoader().load('./docs/assets/images/background.jpg');
+        scene.background = background;
+
+        const ambientLight = new THREE.AmbientLight(0xffffff);
+        scene.add(ambientLight);
+
+        /** Objects **/
+        const plank = new THREE.TextureLoader().load('./docs/assets/images/rings.jpg');
+        const backer_box = new THREE.Mesh(
+        new THREE.PlaneGeometry(window.innerWidth,.8),
+        new THREE.MeshBasicMaterial({color: 0xffffff, map: plank})
+        );
+        backer_box.position.setZ(-6.1);
+        backer_box.position.setX(0);
+        backer_box.position.setY(0.08);
+        scene.add(backer_box);
+        const aaron_img = new THREE.TextureLoader().load('./docs/assets/images/83590.jpg');
+        const aaron_plane = new THREE.PlaneGeometry(.56,1);
+        const picture_frame = new THREE.Mesh(
+        aaron_plane,
+        new THREE.MeshBasicMaterial({color: 0xffffff, map: aaron_img})
+        );
+        picture_frame.position.setZ(-6);
+        picture_frame.position.setX(1.2);
+        picture_frame.position.setY(.07);
+        scene.add(picture_frame);
+
+        const edge = new THREE.EdgesGeometry(aaron_plane);
+        const line = new THREE.LineSegments(edge, new THREE.LineBasicMaterial({color: 0xffffff}));
+        line.position.setZ(-6);
+        line.position.setX(1.2);
+        line.position.setY(.07);
+        scene.add(line);
+
+        const SVCC_img = new THREE.TextureLoader().load('./docs/assets/images/SVCC.png');
+        const SVCC_frame = new THREE.Mesh(
+        new THREE.PlaneGeometry(4,.6),
+        new THREE.MeshBasicMaterial({map: SVCC_img, transparent: true})
+        );
+        SVCC_frame.position.setZ(-4);
+        SVCC_frame.position.setX(-1.4);
+        SVCC_frame.position.setY(1.8);
+        SVCC_frame.rotateY(0.12);
+        scene.add(SVCC_frame);
+
+        const ODU_img = new THREE.TextureLoader().load('./docs/assets/images/ODU.png');
+        const ODU_frame = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.2,1),
+        new THREE.MeshBasicMaterial({map: ODU_img, transparent: true})
+        );
+        ODU_frame.position.setZ(2);
+        ODU_frame.position.setX(.6);
+        ODU_frame.position.setY(-.2);
+        scene.add(ODU_frame);
+
+        const tet_tex = new THREE.TextureLoader().load('./docs/assets/images/cobalt.jpg');
+        const norm_tex = new THREE.TextureLoader().load('./docs/assets/images/satnorm.jpg');
+        const tet = new THREE.Mesh(
+        new THREE.DodecahedronGeometry(.1),
+        new THREE.MeshStandardMaterial({
+            map: tet_tex,
+            normalMap: norm_tex
+        })
+        );
+        tet.position.setZ(35);
+        tet.position.setX(-10);
+        tet.position.setY(1.5);
+        scene.add(tet);
+
+        const tet1 = new THREE.Mesh(
+        new THREE.DodecahedronGeometry(.3),
+        new THREE.MeshStandardMaterial({
+            map: tet_tex,
+            normalMap: norm_tex
+        })
+        );
+        tet1.position.setZ(35);
+        tet1.position.setX(-40);
+        tet1.position.setY(-1.5);
+        scene.add(tet1);
+
+        const tet2 = new THREE.Mesh(
+        new THREE.DodecahedronGeometry(.2),
+        new THREE.MeshStandardMaterial({
+            map: tet_tex,
+            normalMap: norm_tex
+        })
+        );
+        tet2.position.setZ(70);
+        tet2.position.setX(-10);
+        tet2.position.setY(1.5);
+        scene.add(tet2);
+
+        const tet3 = new THREE.Mesh(
+        new THREE.DodecahedronGeometry(.5),
+        new THREE.MeshStandardMaterial({
+            map: tet_tex,
+            normalMap: norm_tex
+        })
+        );
+        tet3.position.setZ(100);
+        tet3.position.setX(-40);
+        tet3.position.setY(-1.5);
+        scene.add(tet3);
+
+        const planet_texture = new THREE.TextureLoader().load('./docs/assets/images/sat.jpg');
+        const planet = new THREE.Mesh(
+        new THREE.SphereGeometry(3, 32, 32),
+        new THREE.MeshStandardMaterial({
+            map: planet_texture,
+        })
+        );
+        planet.position.setZ(10);
+        planet.position.setX(4.4);
+        planet.position.setY(0);
+        scene.add(planet);
+
+        const particlesCount = 5000;
+        const positions = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount; i++) {
+        positions[i * 3 + 0] = THREE.MathUtils.randFloatSpread(100);
+        positions[i * 3 + 1] = THREE.MathUtils.randFloatSpread(100);
+        positions[i * 3 + 2] = THREE.MathUtils.randFloatSpread(100);
+        }
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+        color: '#ffeded',
+        sizeAttenuation: true,
+        size: 0.03
+        });
+
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particles);
+            
+        /** functions and Animations **/
+        function moveCamera() {
+        const t = document.body.getBoundingClientRect().top;
+
+        camera.position.z = t * -0.01;
+        camera.position.x = t * -0.0002;
+        camera.rotation.y = t * -0.0002;
+        }
+
+        let scrollY = window.scrollY;
+        let currentSection = 0;
+
+        window.addEventListener('scroll', () => {
+        scrollY = window.scrollY;
+
+        const newSection = Math.round(scrollY / sizes.height);
+
+        if (newSection != currentSection) {
+            currentSection = newSection;
+            if (currentSection == 1) {
+            gsap.to(planet.position, {
+                duration: 1,
+                x: 4.4,
+                ease: "expo.out"
+            })
+            gsap.to(ODU_frame.rotation, {
+                duration: 2,
+                x: 0,
+                ease: "power1.out"
+            })
+            gsap.to(SVCC_frame.rotation, {
+                duration: 4,
+                x: -.05,
+                ease: "power1.out"
+            })
+            }
+            if (currentSection == 2) {
+            gsap.to(planet.position, {
+                duration: 6,
+                x: 1.2,
+                ease: "power1.out"
+            })
+            gsap.to(ODU_frame.rotation, {
+                duration: 3,
+                x: 4,
+                ease: "power1.out"
+            })
+            gsap.to(SVCC_frame.rotation, {
+                duration: 3,
+                x: 4,
+                ease: "power1.out"
+            })
+            }
+            if (currentSection == 3) {
+            gsap.to(planet.position, {
+                duration: 10,
+                x: 4.4,
+                ease: "power1.in"
+            })
+            }
+
+        }
+        })
+
+        const cursor = {};
+        cursor.x = 0;
+        cursor.y = 0;
+
+        window.addEventListener('mousemove', (event) => {
+        cursor.x = event.clientX / window.innerWidth - 0.5
+        cursor.y = event.clientY / window.innerHeight - 0.5
+        })
+
+        var n = 0.2;
+        var n2 = 0.1;
+
+        function anim(obj1, obj2) {
+            obj1.position.x += n;
+        
+        if (obj1.position.x > 35) {
+            n = -0.15;
+        }
+        if (obj1.position.x < -70) {
+            n = 0.05;
+        }
+
+        obj2.position.x += n2;
+        
+        if (obj2.position.x > 35) {
+            n2 = -0.05;
+        }
+        if (obj2.position.x < -60) {
+            n2 = 0.5;
+        }
+        }
+
+        var n1 = 0.2;
+        var n3 = 0.1;
+
+        function anim1(obj1, obj2) {
+            obj1.position.z += n1;
+        
+        if (obj1.position.z > 65) {
+            n1 = -0.05;
+        }
+        if (obj1.position.z < -100) {
+            n1 = 0.2;
+        }
+
+        obj2.position.z += n3;
+        
+        if (obj2.position.z > 100) {
+            n3 = -0.05;
+        }
+        if (obj2.position.z < -200) {
+            n3 = 1;
+        }
+        }
+
+        const clock = new THREE.Clock();
+        let previousTime = 0
+        function animate() {
+        const elapsedTime = clock.getElapsedTime();
+        const deltaTime = elapsedTime - previousTime;
+        previousTime = elapsedTime;
+        planet.rotation.y -= deltaTime*0.08;
+
+        tet.rotation.x += deltaTime*.5;
+        tet.rotation.y += deltaTime*.05;
+        tet.rotation.z += deltaTime*.5;
+
+        tet1.rotation.x += deltaTime*.15;
+        tet1.rotation.y += deltaTime*.5;
+        tet1.rotation.z += deltaTime*.15;
+
+        tet2.rotation.x += deltaTime*.5;
+        tet2.rotation.y += deltaTime*.05;
+        tet2.rotation.z += deltaTime*.5;
+
+        tet3.rotation.x += deltaTime*.9;
+        tet3.rotation.y += deltaTime*.7;
+        tet3.rotation.z += deltaTime*.2;
+
+        const parralaxX = cursor.x;
+        const parralaxY = -cursor.y;
+        camera.position.x += (parralaxX - camera.position.x) * 0.7 * deltaTime;
+        camera.position.y += (parralaxY - camera.position.y) * 0.7 * deltaTime;
+
+        renderer.render(scene, camera);
+        anim(tet, tet1);
+        anim1(tet2, tet3);
+        requestAnimationFrame(animate);
+        }
+
+
+        const sizes = {
+        width: window.innerWidth,
+        height: window.innerHeight
+        }
+
+        window.addEventListener('resize', () =>
+        {
+        // Update sizes
+        sizes.width = window.innerWidth
+        sizes.height = window.innerHeight
+
+        // Update camera
+        camera.aspect = sizes.width / sizes.height
+        camera.updateProjectionMatrix()
+
+        // Update renderer
+        renderer.setSize(sizes.width, sizes.height)
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        })
+
+        document.body.onscroll = moveCamera;
+        moveCamera();
+        animate();
+
+    </script>
+
+    <canvas id="bg"></canvas>
+    <main>
+
+        <header>
+          <h1>Aaron Reynolds</h1>
+          <h4>🖥️ Software Engineer 🤖</h4>
+        </header>
+  
+        <section>
+          <h2>👨🏽‍🚀 About Me</h2>
+          <p>
+            Hello! My name is Aaron Reynolds. I am a recent Computer Science graduate from Old Dominion University. Before that, I attended Southside Virginia Community College for an Associate's degree in Science. However, it wasn't until attending ODU that my coding journey began. In my 2.5 years at ODU, I learned concepts regarding programming, problem-solving, the software development process, and much more.
+          </p>
+  
+          <p>
+            Currently, I am looking for employment as a junior software engineer so that I may build upon my foundation and begin my career in the tech field. I would love to help create or maintain software that solves challenging problems and makes a difference. Until then, I plan to write a great deal of code and learn as much as possible. My past projects include, to a great extent, my coursework from ODU: Sokoban-Solver, Sodoku-Solver, Connect-4-Enemy, University Enrollment Projections, and a software prototype for tracking forest health. That is just naming a handful.
+          </p>
+  
+          <p>
+            From this point forward, I plan to continually strengthen my understanding of data structures and algorithms, continue building my programming and problem-solving skills, and continue learning technologies including but not limited to: Node.JS, Three.JS, React, Flask, OpenCV, TensorFlow, Rust, and AWS.
+          </p>
+  
+        </section>
+  
+        <section class="pic">
+          <h3 style="text-align: center;">Links</h3>
+          <a href="https://github.com/areyn77463/s22-forester-in-a-box"><img class="pro" style="margin-top: 10%;" src="./docs/assets/images/fiab.png"></a>
+          <img class="pro" style="margin-top: 20%;" src="./docs/assets/images/pe.png">
+          <a href="https://github.com/areyn77463/MazerRun"><img class="pro" style="margin-top: 18%; margin-left:15%; width: 70%; height: 20%;" src="./docs/assets/images/pg.png"></a>
+          <img class="pro" style="margin-top: 18%; margin-left:15%; width: 70%; height: 20%;" src="./docs/assets/images/s.png">
+        </section>
+        <section class="left">
+          <h2>🚀 Projects</h2>
+          <p>
+            <h4>Forester-in-a-Box</h4>
+            •	A prototype to a hardware/software solution aimed at providing the private woodlot owner with timely forest management recommendations based on sensor data gathered in their woodlot<br>
+            •	Collaborates in an Agile Test-Driven Development team<br>
+            •	Works specifically on writing front-end code, back-end code, and integrating the ArcGIS API for interactive web maps<br>
+            •	Uses Visual Studio Code, HTML/CSS, PHP, JavaScript, Python, MySQL, MySQL Workbench, GitHub, GanttLab<br>
+            <h4>Projected Enrollments</h4>
+            •	Command Line Application that parses .csv files from a large database of historic and current class enrollments to predict future enrollments, output results to the CLI, and save results to a Microsoft .xlsx file at a given destination<br>
+            •	Collaborated in an Agile Test-Driven Development team<br>
+            •	Worked specifically on Command Line Interface, Junit testing, and OpenCSV for producing spreadsheets and graphs<br>
+            •	Used Eclipse, Java, GitLab, OpenProject, Gradle, Junit5, OpenCSV<br>
+            <h4>2D Platformer</h4>
+            •	A 2D pixel platformer game that allows the user to run, jump, climb, collect coins, win, and lose<br>
+            •	Implemented gravity, collision, inheritance, and events<br>
+            •	Created pixel art objects, sprites, and animations<br>
+            •	Used JetBrains PyCharm, Python, Pygame, Paint 3d<br>
+            <h4>Sokoban-Solver</h4>
+            •	A command line interface that takes an unsolved Sokoban board as input and solves it using a chosen search algorithm<br>
+            •	Created a Sokoban game clone that runs on the command line<br>
+            •	Implemented breadth-first, depth-first, greedy, and A* search algorithms to solve Sokoban board<br>
+            •	Used C++, WSL Ubuntu, GNU make, Vim
+          </p>
+  
+        </section>
+  
+        <section class="lid">
+          <h2>⚒️ Work History 📖</h2>
+          <h3>Tutor</h3>
+          <h4><a href="https://www.odu.edu/sci/msrc">Old Dominion University</a></h4>
+          <p>
+          •	Gave instruction to 100 - 200 level CS students to help them understand the basics of programming and problem solving<br>
+          •	Provided students with additional resources and demonstrations to aid in their understanding of course material<br>
+          </p>
+          <h3>Custom Build Carpenter</h3>
+          <h4><a href="https://www.virginiabarncompany.com/">Virginia Barn Company</a></h4>
+          <p>
+          •	Worked independently or managed a team to accomplish project goals<br>
+          •	Used problem-solving skills to design solutions to unforeseen barriers<br>
+          •	Provided customer service to clients to ensure the company fulfilled their project vision to satisfaction<br>
+          •	Quickly gained proficiency with new tools or techniques to complete certain aspects of a project<br>
+          </p>
+        </section>
+        
+        <section class="info">
+            <h3>Resume: <a href="./docs/assets/word/AaronReynolds_Resume-S2022.docx">Aaron Reynolds - Spring2022</a></h3>
+            <h3>Email: <a href="mailto: ajr2934@outlook.com">ajr2934@outlook.com</a></h3>
+        </section>
+        <section class="info-mobile">
+            <h3><a href="./docs/assets/word/AaronReynolds_Resume-S2022.docx">Resume</a></h3>
+            <h3><a href="mailto: ajr2934@outlook.com">Email</a></h3>
+        </section>
+  
+        <section class="contact" style="margin-bottom: 0;">
+          <a href="https://www.linkedin.com/in/aaron-reynolds-833352197/"><img class="con" style="width:15%; margin-left:5%; margin-right: 4%;" src="./docs/assets/images/Linkedin-logo-1-550x550-300x300.png"></a>
+          <a href="https://github.com/areyn77463"><img class="con" style="margin-right: 3%;" src="./docs/assets/images/GitHub-logo.png"></a>
+          <a href="https://leetcode.com/areyn009/"><img class="con" style="width:15%; margin-right:10%;" src="./docs/assets/images/download.png"></a>
+          <a href="https://www.hackerrank.com/ajr2934"><img class="con" src="./docs/assets/images/hackerank-logo.png"></a>
+        </section>
+  
+      </main>
+</body>
+</html>
