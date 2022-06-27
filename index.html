@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="./style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
     <title>Aaron Reynolds</title>
 </head>
 <body>
@@ -439,6 +440,18 @@
           <a href="https://www.hackerrank.com/ajr2934"><img class="con" src="./docs/assets/images/hackerank-logo.png"></a>
         </section>
   
-      </main>
+    </main>
+    
+    <div class="loader-wrapper">
+        <span class="loader"><span class="loader-inner"></span></span>
+        <h1>&nbsp;&nbsp;LOADING&nbsp;&nbsp;</h1>
+        <span class="loader"><span class="loader-inner"></span></span>
+    </div>
+
+    <script>
+        $(window).on("load", function() {
+            $(".loader-wrapper").fadeOut("slow");
+        });
+    </script>
 </body>
 </html>
