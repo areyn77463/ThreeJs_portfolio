@@ -36,54 +36,63 @@
         scene.add(ambientLight);
 
         /** Objects **/
-        const plank = new THREE.TextureLoader().load('./docs/assets/images/rings.jpg');
+const plank = new THREE.TextureLoader().load('./docs/assets/images/rings.jpg');
         const backer_box = new THREE.Mesh(
-        new THREE.PlaneGeometry(window.innerWidth,.8),
+        new THREE.PlaneGeometry(window.innerWidth*2,.8),
         new THREE.MeshBasicMaterial({color: 0xffffff, map: plank})
         );
         backer_box.position.setZ(-6.1);
         backer_box.position.setX(0);
         backer_box.position.setY(0.08);
-        scene.add(backer_box);
+        backer_box.rotateY(.3);
+        scene.add(backer_box)
+
         const aaron_img = new THREE.TextureLoader().load('./docs/assets/images/83590.jpg');
         const aaron_plane = new THREE.PlaneGeometry(.56,1);
         const picture_frame = new THREE.Mesh(
-        aaron_plane,
-        new THREE.MeshBasicMaterial({color: 0xffffff, map: aaron_img})
+            aaron_plane,
+            new THREE.MeshBasicMaterial({color: 0xffffff, map: aaron_img})
         );
-        picture_frame.position.setZ(-6);
-        picture_frame.position.setX(1.2);
-        picture_frame.position.setY(.07);
-        scene.add(picture_frame);
-
         const edge = new THREE.EdgesGeometry(aaron_plane);
         const line = new THREE.LineSegments(edge, new THREE.LineBasicMaterial({color: 0xffffff}));
-        line.position.setZ(-6);
-        line.position.setX(1.2);
-        line.position.setY(.07);
-        scene.add(line);
+        
+        function renderProfile(z = -6, x = 1.2, y = .07) {
+            picture_frame.position.setZ(z); // -6
+            picture_frame.position.setX(x); // 1.2
+            picture_frame.position.setY(y); // .07
+            scene.add(picture_frame);
+
+            line.position.setZ(z); // -6
+            line.position.setX(x); // 1.2
+            line.position.setY(y); // .07
+            scene.add(line);
+        }
 
         const SVCC_img = new THREE.TextureLoader().load('./docs/assets/images/SVCC.png');
         const SVCC_frame = new THREE.Mesh(
-        new THREE.PlaneGeometry(4,.6),
-        new THREE.MeshBasicMaterial({map: SVCC_img, transparent: true})
-        );
-        SVCC_frame.position.setZ(-4);
-        SVCC_frame.position.setX(-1.4);
-        SVCC_frame.position.setY(1.8);
-        SVCC_frame.rotateY(0.12);
-        scene.add(SVCC_frame);
-
+            new THREE.PlaneGeometry(4,.6),
+            new THREE.MeshBasicMaterial({map: SVCC_img, transparent: true})
+        );        
         const ODU_img = new THREE.TextureLoader().load('./docs/assets/images/ODU.png');
         const ODU_frame = new THREE.Mesh(
-        new THREE.PlaneGeometry(1.2,1),
-        new THREE.MeshBasicMaterial({map: ODU_img, transparent: true})
+            new THREE.PlaneGeometry(1.2,1),
+            new THREE.MeshBasicMaterial({map: ODU_img, transparent: true})
         );
-        ODU_frame.position.setZ(2);
-        ODU_frame.position.setX(.6);
-        ODU_frame.position.setY(-.2);
-        scene.add(ODU_frame);
+        
+        function renderSchool() {
+            SVCC_frame.position.setZ(-4);
+            SVCC_frame.position.setX(-1.4);
+            SVCC_frame.position.setY(1.8);
+            SVCC_frame.rotateY(0.12);
+            scene.add(SVCC_frame);
 
+            ODU_frame.position.setZ(2);
+            ODU_frame.position.setX(.6);
+            ODU_frame.position.setY(-.2);
+            scene.add(ODU_frame);
+        }
+
+        
         const tet_tex = new THREE.TextureLoader().load('./docs/assets/images/cobalt.jpg');
         const norm_tex = new THREE.TextureLoader().load('./docs/assets/images/satnorm.jpg');
         const tet = new THREE.Mesh(
@@ -93,11 +102,6 @@
             normalMap: norm_tex
         })
         );
-        tet.position.setZ(35);
-        tet.position.setX(-10);
-        tet.position.setY(1.5);
-        scene.add(tet);
-
         const tet1 = new THREE.Mesh(
         new THREE.DodecahedronGeometry(.3),
         new THREE.MeshStandardMaterial({
@@ -105,11 +109,6 @@
             normalMap: norm_tex
         })
         );
-        tet1.position.setZ(35);
-        tet1.position.setX(-40);
-        tet1.position.setY(-1.5);
-        scene.add(tet1);
-
         const tet2 = new THREE.Mesh(
         new THREE.DodecahedronGeometry(.2),
         new THREE.MeshStandardMaterial({
@@ -117,11 +116,6 @@
             normalMap: norm_tex
         })
         );
-        tet2.position.setZ(70);
-        tet2.position.setX(-10);
-        tet2.position.setY(1.5);
-        scene.add(tet2);
-
         const tet3 = new THREE.Mesh(
         new THREE.DodecahedronGeometry(.5),
         new THREE.MeshStandardMaterial({
@@ -129,10 +123,38 @@
             normalMap: norm_tex
         })
         );
+
+        function renderCom(pos = 1, neg = 1) {
+        tet.position.setZ(35);
+        tet.position.setX(-10);
+        tet.position.setY(1.5) * pos;
+        scene.add(tet);
+
+
+        tet1.position.setZ(35);
+        tet1.position.setX(-40);
+        tet1.position.setY(-1.5) * neg;
+        scene.add(tet1);
+
+        tet2.position.setZ(70);
+        tet2.position.setX(-10);
+        tet2.position.setY(1.5) * pos;
+        scene.add(tet2);
+
         tet3.position.setZ(100);
         tet3.position.setX(-40);
-        tet3.position.setY(-1.5);
+        tet3.position.setY(-1.5) * neg;
         scene.add(tet3);
+        }
+
+        if (window.innerWidth > 754) {
+            renderProfile();
+            renderSchool();
+            renderCom();
+        } else {
+            renderProfile(-6, 0, .5)
+            renderCom(-2, 2);
+        }
 
         const planet_texture = new THREE.TextureLoader().load('./docs/assets/images/sat.jpg');
         const planet = new THREE.Mesh(
