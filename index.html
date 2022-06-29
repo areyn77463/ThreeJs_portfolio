@@ -36,7 +36,7 @@
         scene.add(ambientLight);
 
         /** Objects **/
-const plank = new THREE.TextureLoader().load('./docs/assets/images/rings.jpg');
+        const plank = new THREE.TextureLoader().load('./docs/assets/images/rings.jpg');
         const backer_box = new THREE.Mesh(
         new THREE.PlaneGeometry(window.innerWidth*2,.8),
         new THREE.MeshBasicMaterial({color: 0xffffff, map: plank})
@@ -56,6 +56,7 @@ const plank = new THREE.TextureLoader().load('./docs/assets/images/rings.jpg');
         const edge = new THREE.EdgesGeometry(aaron_plane);
         const line = new THREE.LineSegments(edge, new THREE.LineBasicMaterial({color: 0xffffff}));
         
+        // adds profile picture and frame to z,x,y coordinates in scene
         function renderProfile(z = -6, x = 1.2, y = .07) {
             picture_frame.position.setZ(z); // -6
             picture_frame.position.setX(x); // 1.2
@@ -79,6 +80,7 @@ const plank = new THREE.TextureLoader().load('./docs/assets/images/rings.jpg');
             new THREE.MeshBasicMaterial({map: ODU_img, transparent: true})
         );
         
+        // adds school logos to scene
         function renderSchool() {
             SVCC_frame.position.setZ(-4);
             SVCC_frame.position.setX(-1.4);
@@ -123,7 +125,8 @@ const plank = new THREE.TextureLoader().load('./docs/assets/images/rings.jpg');
             normalMap: norm_tex
         })
         );
-
+        
+        // adds asteroids to scene and multiplies y coordinate for responsivenes
         function renderCom(pos = 1, neg = 1) {
         tet.position.setZ(35);
         tet.position.setX(-10);
@@ -146,12 +149,13 @@ const plank = new THREE.TextureLoader().load('./docs/assets/images/rings.jpg');
         tet3.position.setY(-1.5) * neg;
         scene.add(tet3);
         }
-
+        
+        // if window screen pc width render normal placement in scene
         if (window.innerWidth > 754) {
             renderProfile();
             renderSchool();
             renderCom();
-        } else {
+        } else { // else render responsive placement for @media
             renderProfile(-6, 0, .5)
             renderCom(-2, 2);
         }
